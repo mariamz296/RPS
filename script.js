@@ -1,5 +1,18 @@
-console.log("Let's play Rock, Paper, Scissors!")
+const rockButton = document.getElementById("rock");
+const paperButton = document.getElementById("paper");
+const scissorsButton = document.getElementById("scissors");
+const restartButton = document.getElementById("restart")
 
+rockButton.addEventListener("click", () => playRound("Rock"));
+paperButton.addEventListener("click", () => playRound("Paper"));
+scissorsButton.addEventListener("click", () => playRound("Scissors"));
+restartButton.addEventListener("click", restartGame);
+
+const roundResult = document.getElementById("round-result");
+const scoreDisplay = document.getElementById("score");
+
+let computerScore = 0;
+let humanScore = 0;
 
 function getRandomInt(max) {
     return Math.floor(Math.random() * max);
@@ -8,7 +21,6 @@ function getRandomInt(max) {
 function getComputerChoice() {
     let computerChoice;
     let num = getRandomInt(3);
-    /* console.log(num); */
 
     if (num == 0)
         computerChoice = "Rock";
@@ -16,69 +28,57 @@ function getComputerChoice() {
         computerChoice = "Paper";
     else if (num == 2)
         computerChoice = "Scissors";
-    console.log("Computer Choice: " + computerChoice);
 
     return computerChoice;
 }
 
-function getHumanChoice() {
-    let str = prompt("Type Rock, Paper, or Scissors");
-    let humanChoice = str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
-    console.log("Your choice: " + humanChoice);
-
-    return humanChoice;
-}
-
-function playRound(humanChoice, computerChoice) {
-    let winner, loser;
+function playRound(humanChoice) {
+    const computerChoice = getComputerChoice();
+    let winner;
 
     if ( (humanChoice == "Rock" && computerChoice == "Paper") || (humanChoice == "Paper" && computerChoice == "Scissors") || (humanChoice == "Scissors" && computerChoice == "Rock") ) {
         winner = "Computer";
-        console.log(winner + " won! Computer's " + computerChoice + " beats " + humanChoice);
+        computerScore += 1;
+        roundResult.textContent = winner + " won! Computer's " + computerChoice + " beats " + humanChoice;
     }
     else if ( (humanChoice == "Rock" && computerChoice == "Scissors") || (humanChoice == "Paper" && computerChoice == "Rock") || (humanChoice == "Scissors" && computerChoice == "Paper") ) {
         winner = "You";
-        console.log(winner + " won! Your " + humanChoice + " beats " + computerChoice);
+        humanScore += 1;
+        roundResult.textContent = winner + " won! Your " + humanChoice + " beats " + computerChoice;
     }
     else if (humanChoice == computerChoice) {
-        console.log("It's a tie!");
+        roundResult.textContent = "It's a tie!";
         winner = "Tie";
     }
 
-    return winner;
-}
+    scoreDisplay.textContent = "You: " + humanScore + " Computer: " + computerScore;
 
-function playGame() {
-    let computerScore = 0;
-    let humanScore = 0;
-    let winner;
-
-    let i;
-    for (i=1; i<=5; i++) {
-        console.log("Round " + i);
-        const humanSelection = getHumanChoice();
-        const computerSelection = getComputerChoice();
-
-        winner = playRound(humanSelection, computerSelection);
-        if (winner === "You") {
-            humanScore += 1;
+    if (humanScore === 5 || computerScore === 5) {
+        if (humanScore > computerScore) {
+            roundResult.textContent = "Congratulations! You won the game!";
+        } else {
+            roundResult.textContent = "Sorry, the computer won the game.";
         }
-        else if (winner === "Computer") {
-            computerScore += 1;
-        }
-    }
 
-    console.log("Your score: " + humanScore);
-    console.log("Computer score: " + computerScore);
+        // disbale buttons
+        rockButton.disabled = true;
+        paperButton.disabled = true;
+        scissorsButton.disabled = true;
 
-    if (humanScore > computerScore) {
-        console.log("You win the game!");
-    } else if (computerScore > humanScore) {
-        console.log("Computer wins the game!");
-    } else {
-        console.log("It's a tie!");
+        restartButton.style.display = "inline";
     }
 }
 
+function restartGame() {
+    computerScore = 0; humanScore = 0;
 
-playGame();
+    scoreDisplay.textContent = "You: " + humanScore + " Computer: " + computerScore;
+    roundResult.textContent = "";
+    
+    // enable buttons
+    rockButton.disabled = false;
+    paperButton.disabled = false;
+    scissorsButton.disabled = false;
+
+    restartButton.style.display = "none";
+}
